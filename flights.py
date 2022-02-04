@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask_restful import Api, Resource 
+from flask_restful import Api, Resource, abort
 
 
 app = Flask(__name__)
@@ -60,6 +60,11 @@ flights_data = {
 }
 
 
+def abort_if_flight_missing(flight_id):
+    if flight_id not in flights_data:
+        abort(404, message='No flight found with this id')
+
+
 class FlightsList(Resource):
     def get(self):
         return flights_data
@@ -67,6 +72,7 @@ class FlightsList(Resource):
 
 class Flight(Resource):
     def get(self, flight_id):
+        abort_if_flight_missing(flight_id)
 
         flight = flights_data[flight_id]
 
