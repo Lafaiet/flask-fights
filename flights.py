@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restful import Api, Resource, abort, reqparse
 import random
 import requests
-from copy import deepcopy
+from copy import copy
 
 app = Flask(__name__)
 api = Api(app)
@@ -111,10 +111,9 @@ class FlightUSD(Resource):
 
         flight = flights_data[flight_id]
 
-        flight_usd = deepcopy(flight)
+        flight_usd = copy(flight)
 
-        flight_usd['base_ticket_prices']['economy'] = flight_usd['base_ticket_prices']['economy'] * eur_usd
-        flight_usd['base_ticket_prices']['busines'] = flight_usd['base_ticket_prices']['busines'] * eur_usd
+        flight_usd['base_ticket_prices'] = flight_usd['base_ticket_prices'] * eur_usd
            
 
         return flight_usd
