@@ -92,10 +92,13 @@ class Flight(Resource):
         return flight
     
     def put(self, flight_id):
-        data = request.json
-        flights_data[flight_id] = data
+        data = flight_req.parse_args()
+        flight = flights_data[flight_id]
 
-        return data
+        for field in data:
+            flight[field] = data[field]
+
+        return flight
 
 
 class FlightUSD(Resource):
