@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 
 app = Flask(__name__)
@@ -10,7 +10,12 @@ def hello_with_number(id):
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    return {'message': f'Hello world'}
+    name = request.args.get('name')
+
+    if name is None:
+        return 'ops! Name is something', 400
+
+    return {'message': f'Hello world. {name}'}
 
 
 if __name__ == '__main__':
