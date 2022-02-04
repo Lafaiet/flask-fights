@@ -99,6 +99,13 @@ class Flight(Resource):
             flight[field] = data[field]
 
         return flight
+    
+    def delete(self, flight_id):
+        abort_if_flight_missing(flight_id)
+        del flights_data[flight_id]
+
+        return '', 204
+
 
 
 class FlightUSD(Resource):
