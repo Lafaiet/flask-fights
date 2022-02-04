@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_restful import Api, Resource, abort
+import random
 
 
 app = Flask(__name__)
@@ -68,7 +69,18 @@ def abort_if_flight_missing(flight_id):
 class FlightsList(Resource):
     def get(self):
         return flights_data
+    
+    def post(self):
+        new_flight = request.json
+        flight_id = random.randint(4, 100000000) # this can generate repeated ids!!!!!
+        new_flight['id'] = flight_id
 
+        flights_data[flight_id] = new_flight
+
+        return new_flight, 201
+
+
+    
 
 class Flight(Resource):
     def get(self, flight_id):
