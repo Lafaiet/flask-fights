@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
@@ -8,14 +8,32 @@ app = Flask(__name__)
 def hello_with_number(id):
     return {'message': f'Hello world. Provided number was {id}'}
 
-@app.route('/hello', methods=['GET'])
+@app.route('/hello', methods=['GET', 'POST'])
 def hello():
-    name = request.args.get('name')
 
-    if name is None:
-        return 'ops! Name is something', 400
+    if request.method == 'POST':
+        data = request.json
 
-    return {'message': f'Hello world. {name}'}
+        secret_password = 'superSecret'
+
+        if data['password'] != secret_password:
+            return {'message': 'wrong password!'}, 401
+
+        return {'message': 'This was a post request'}
+
+    
+    if request.method == 'GET':
+        name = request.args.get('name')
+
+        if name is None:
+            return {'message': 'ops! Name is something'}, 400
+
+        messages = [
+            {'message': f'Hello {name}'},
+            {'message': f'This is my awesome restapi'}
+        ]
+
+        return jsonify(messages)
 
 
 if __name__ == '__main__':
