@@ -1,7 +1,8 @@
 from flask import Flask, request
 from flask_restful import Api, Resource, abort
 import random
-
+import requests
+from copy import deepcopy
 
 app = Flask(__name__)
 api = Api(app)
@@ -78,8 +79,7 @@ class FlightsList(Resource):
         flights_data[flight_id] = new_flight
 
         return new_flight, 201
-
-
+        
     
 
 class Flight(Resource):
@@ -89,9 +89,36 @@ class Flight(Resource):
         flight = flights_data[flight_id]
 
         return flight
+    
+    def put(self, flight_id):
+        data = request.json
+        flights_data[flight_id] = data
+
+        return data
+
+
+class FlightUSD(Resource):
+    def get(self, flight_id):
+        abort_if_flight_missing(flight_id)
+
+        resp = requests.get('https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/eur.json')
+        currency_rates = resp.json()
+        eur_usd = currency_rates['eur']['usd']
+
+        flight = flights_data[flight_id]
+
+        flight_usd = deepcopy(flight)
+
+        flight_usd['base_ticket_prices']['economy'] = flight_usd['base_ticket_prices']['economy'] * eur_usd
+        flight_usd['base_ticket_prices']['busines'] = flight_usd['base_ticket_prices']['busines'] * eur_usd
+           
+
+        return flight_usd
+    
 
 
 api.add_resource(FlightsList, '/flights/')
+api.add_resource(FlightUSD, '/flights/usd/<int:flight_id>')
 api.add_resource(Flight, '/flights/<int:flight_id>')
 
 
