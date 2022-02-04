@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask_restful import Api, Resource, abort
+from flask_restful import Api, Resource, abort, reqparse
 import random
 import requests
 from copy import deepcopy
@@ -21,12 +21,8 @@ flights_data = {
         'arrival_time': '2022/02/04 22:00',
         'departing_airport': 'TTL airport',
         'arrival_airport': 'Berlin airport',
-        'base_ticket_prices': {
-            'economy': 100,
-            'busines': 200
-        }
+        'base_ticket_prices': 123
     },
-
     2: {
         'id': 2,
         'number': 'LH123',
@@ -37,12 +33,8 @@ flights_data = {
         'arrival_time': '2022/03/04 22:00',
         'departing_airport': 'TTL airport',
         'arrival_airport': 'Berlin airport',
-        'base_ticket_prices': {
-            'economy': 34,
-            'busines': 67
-        }
+        'base_ticket_prices': 435
     },
-
     3: {
         'id': 3,
         'number': 'TY323',
@@ -53,13 +45,22 @@ flights_data = {
         'arrival_time': '2022/02/04 22:00',
         'departing_airport': 'TTL airport',
         'arrival_airport': 'Berlin airport',
-        'base_ticket_prices': {
-            'economy': 54,
-            'busines': 76
-        }
-    },
+        'base_ticket_prices': 545.645
+    }
 
 }
+
+
+flight_req = reqparse.RequestParser()
+flight_req.add_argument('number', type=str, required=True)
+flight_req.add_argument('number_passengers', type=int, required=True)
+flight_req.add_argument('origin', type=str, required=True)
+flight_req.add_argument('destination', type=str, required=True, help='Destination is required')
+flight_req.add_argument('departing_time', type=str, required=True)
+flight_req.add_argument('arrival_time', type=str, required=True)
+flight_req.add_argument('departing_airport', type=str, required=True)
+flight_req.add_argument('arrival_airport', type=str, required=True)
+flight_req.add_argument('base_ticket_prices', type=float, required=True)
 
 
 def abort_if_flight_missing(flight_id):
@@ -72,7 +73,7 @@ class FlightsList(Resource):
         return flights_data
     
     def post(self):
-        new_flight = request.json
+        new_flight = flight_req.parse_args()
         flight_id = random.randint(4, 100000000) # this can generate repeated ids!!!!!
         new_flight['id'] = flight_id
 
