@@ -20,12 +20,17 @@
                 </tr>
             </thead>
             <tbody>
-
+                
+                {% for f in flights %}
+                
                 <tr>
-                    <td>1</td>
-                    <td>New York</td>
-                    <td>Berlin</td>
+                    <td>{{f.id}}</td>
+                    <td>{{f.origin}}</td>
+                    <td>{{f.destination}}</td>
                 </tr>
+
+                {% endfor %}
+
 
             </tbody>
         </table>
