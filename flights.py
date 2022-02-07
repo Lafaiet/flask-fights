@@ -154,7 +154,10 @@ class Flight(Resource):
 
         return flight
     
+    @marshal_with(flight_model_field)
     def put(self, flight_id):
+        abort_if_flight_missing(flight_id)
+
         data = flight_req.parse_args()
 
         flight = FlightModel.query.get(flight_id)
@@ -167,20 +170,49 @@ class Flight(Resource):
         flight.departing_airport = data['departing_airport']
         flight.arrival_airport = data['arrival_airport']
         flight.base_ticket_prices = data['base_ticket_prices']
-        flight.arrival_airport = data['arrival_airport']
         flight.number_passengers = data['number_passengers']
 
         db.session.commit()
 
         return flight
     
+    @marshal_with(flight_model_field)
     def patch(self, flight_id):
+        abort_if_flight_missing(flight_id)
+        
         data = flight_req_patch.parse_args()
-        flight = flights_data[flight_id]
 
-        for field in data:
-            if data[field] is not None:
-                flight[field] = data[field]
+        flight = FlightModel.query.get(flight_id)
+        
+        if data['number']:
+            flight.number = data['number']
+        
+        if data['origin']:
+            flight.origin = data['origin']
+        
+        if data['destination']:
+            flight.destination = data['destination']
+        
+        if data['departing_time']:
+            flight.departing_time = data['departing_time']
+
+        if data['arrival_time']:
+            flight.arrival_time = data['arrival_time']
+
+        if data['departing_airport']:
+            flight.departing_airport = data['departing_airport']
+
+        if data['base_ticket_prices']:
+            flight.base_ticket_prices = data['base_ticket_prices']
+
+        if data['arrival_airport']:
+            flight.arrival_airport = data['arrival_airport']
+
+        if data['number_passengers']:
+            flight.number_passengers = data['number_passengers']
+
+
+        db.session.commit()
 
         return flight
     
