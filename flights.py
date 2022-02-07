@@ -3,10 +3,27 @@ from flask_restful import Api, Resource, abort, reqparse
 import random
 import requests
 from copy import copy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 api = Api(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
 
+
+
+class FlightModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String(10), nullable=False)
+    origin = db.Column(db.String(50), nullable=False)
+    destination = db.Column(db.String(50), nullable=False) 
+    departing_time = db.Column(db.String(20), nullable=False)   
+    arrival_time = db.Column(db.String(20), nullable=False)  
+    departing_airport = db.Column(db.String(20), nullable=False) 
+    base_ticket_prices = db.Column(db.Float, nullable=False)   
+
+
+db.create_all()
 
 
 flights_data = {
