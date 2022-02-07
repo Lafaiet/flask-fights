@@ -105,7 +105,9 @@ flight_req_patch.add_argument('base_ticket_prices', type=float)
 
 
 def abort_if_flight_missing(flight_id):
-    if flight_id not in flights_data:
+    flight  = FlightModel.query.get(flight_id)
+
+    if not flight:
         abort(404, message='No flight found with this id')
 
 
@@ -139,10 +141,10 @@ class FlightsList(Resource):
     
 
 class Flight(Resource):
+    @marshal_with(flight_model_field)
     def get(self, flight_id):
         abort_if_flight_missing(flight_id)
-
-        flight = flights_data[flight_id]
+        flight = FlightModel.query.get(flight_id)
 
         return flight
     
