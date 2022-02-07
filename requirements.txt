@@ -3,3 +3,4 @@ flask-restful
 requests
 flask-sqlalchemy
 flasgger
+flask-debugtoolbar
