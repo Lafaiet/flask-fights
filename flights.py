@@ -62,6 +62,17 @@ flight_req.add_argument('departing_airport', type=str, required=True)
 flight_req.add_argument('arrival_airport', type=str, required=True)
 flight_req.add_argument('base_ticket_prices', type=float, required=True)
 
+flight_req_patch = reqparse.RequestParser()
+flight_req_patch.add_argument('number', type=str)
+flight_req_patch.add_argument('number_passengers', type=int)
+flight_req_patch.add_argument('origin', type=str)
+flight_req_patch.add_argument('destination', type=str)
+flight_req_patch.add_argument('departing_time', type=str)
+flight_req_patch.add_argument('arrival_time', type=str)
+flight_req_patch.add_argument('departing_airport', type=str)
+flight_req_patch.add_argument('arrival_airport', type=str)
+flight_req_patch.add_argument('base_ticket_prices', type=float)
+
 
 def abort_if_flight_missing(flight_id):
     if flight_id not in flights_data:
@@ -97,6 +108,16 @@ class Flight(Resource):
 
         for field in data:
             flight[field] = data[field]
+
+        return flight
+    
+    def patch(self, flight_id):
+        data = flight_req_patch.parse_args()
+        flight = flights_data[flight_id]
+
+        for field in data:
+            if data[field] is not None:
+                flight[field] = data[field]
 
         return flight
     
