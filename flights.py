@@ -98,14 +98,27 @@ def abort_if_flight_missing(flight_id):
 
 class FlightsList(Resource):
     def get(self):
-        return flights_data
+        result = FlightModel.query.all()
+
+        flights = [{'id': f.id, 'number': f.number} for f in result]
+
+        return flights
     
     def post(self):
-        new_flight = flight_req.parse_args()
-        flight_id = random.randint(4, 100000000) # this can generate repeated ids!!!!!
-        new_flight['id'] = flight_id
+        new_flight_data = flight_req.parse_args()
 
-        flights_data[flight_id] = new_flight
+        new_flight = FlightModel(
+            number = new_flight_data['number'],
+            origin = new_flight_data['origin'],
+            destination = new_flight_data['destination'],
+            departing_time = new_flight_data['departing_time'],
+            arrival_time = new_flight_data['arrival_time'],
+            departing_airport = new_flight_data['departing_airport'],
+            base_ticket_prices = new_flight_data['base_ticket_prices']
+        )
+
+        db.session.add(new_flight)
+        db.session.commit()
 
         return new_flight, 201
         
